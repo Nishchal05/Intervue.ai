@@ -78,12 +78,12 @@ const Sidebar = () => {
           <SignedOut>
     <div className="flex flex-col gap-2">
       <SignInButton>
-        <button className="flex items-center gap-2 bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700 transition">
+        <button className="flex items-center cursor-pointer gap-2 bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700 transition">
           <FaSignInAlt /> Login
         </button>
       </SignInButton>
       <SignUpButton>
-        <button className="flex items-center gap-2 border border-indigo-600 text-indigo-700 px-4 py-2 rounded-md hover:bg-indigo-50 transition">
+        <button className="flex cursor-pointer items-center gap-2 border border-indigo-600 text-indigo-700 px-4 py-2 rounded-md hover:bg-indigo-50 transition">
           <FaUserPlus /> Sign Up
         </button>
       </SignUpButton>
