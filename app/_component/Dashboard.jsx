@@ -8,9 +8,9 @@ const Dashboard = () => {
   const { user } = useUser();
 const router=useRouter();
   return (
-    <div className="min-h-screen bg-gradient-to-br from-indigo-100 via-purple-100 to-pink-100 p-6">
+    <div className="h-screen bg-gradient-to-br from-indigo-100 via-purple-100 to-pink-100 p-6">
       {/* Section 1: Welcome + User Info */}
-      <div className="flex justify-between items-center bg-white rounded-xl shadow-md p-6 mb-8">
+      <div className="flex justify-between items-center bg-white rounded-xl shadow-md p-6 mb-8 sm:mt-16">
         <div>
           <h2 className="text-2xl font-bold text-indigo-700">
             Welcome, {user?.firstName || 'User'} 👋
