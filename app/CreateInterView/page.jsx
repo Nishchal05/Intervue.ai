@@ -3,14 +3,23 @@
 import React, { useState } from "react";
 import Sidebar from "../_component/Sidebar";
 import { Progress } from "@/components/ui/progress";
-
+import { Methods } from "openai/resources/fine-tuning/methods";
+import { Content } from "next/font/google";
+import { useUser } from "@clerk/nextjs";
+import { Dot } from "lucide-react";
+import { useRouter } from "next/navigation";
 const Page = () => {
+  const [loading, setloading] = useState(false);
   const [step, setStep] = useState(1);
+  const router=useRouter();
+  const {user}=useUser();
   const [formData, setFormData] = useState({
     jobPosition: "",
     description: "",
     duration: "",
     interviewType: "",
+    useremail: user?.primaryEmailAddress?.emailAddress,
+    username: user?.fullName
   });
 
   const nextStep = () => setStep((prev) => Math.min(prev + 1, 2));
@@ -19,11 +28,28 @@ const Page = () => {
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
-
+  const HandleInterviewLink = async () => {
+    setloading(true);
+    try {
+      const response = await fetch("/api/ai_modal", {
+        method: 'POST',
+        body: JSON.stringify(formData),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+      const result = await response.json();
+      if(result){
+        setloading(false);
+        router.push(`/interview?useremail=${result.useremail}&id=${result.interviewId}`)
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
   return (
     <div className="flex min-h-screen bg-gray-50">
       <Sidebar />
-
       <main className="md:ml-64 mt-15 w-full p-6 flex justify-center items-start">
         <div className="w-full max-w-2xl mt-10 bg-white p-8 rounded-xl shadow-md">
           <h2 className="text-3xl font-bold text-indigo-700 mb-6">
@@ -31,8 +57,6 @@ const Page = () => {
           </h2>
 
           <Progress value={step === 1 ? 50 : 100} className="mb-6" />
-
-          {/* Step 1 */}
           {step === 1 && (
             <div className="space-y-5">
               <div>
@@ -130,10 +154,25 @@ const Page = () => {
                   ← Back
                 </button>
                 <button
-                  onClick={() => alert("Interview Created!")}
-                  disabled={!formData.interviewType}
-                  className={` text-white px-6 py-2 rounded-md hover:bg-indigo-700 transition ${ !formData.interviewType ? "bg-blue-100":"bg-indigo-600"}`}
+                  onClick={() => HandleInterviewLink()}
+                  disabled={loading || !formData.interviewType}
+                  className={` text-white px-6 py-2 rounded-md transition ${
+                    !formData.interviewType || loading ? "bg-blue-100" : "bg-indigo-600"
+                  }`}
                 >
+                  {loading && (
+                    <span className=" flex">
+                      <span className=" animate-bounce">
+                        <Dot />
+                      </span>
+                      <span className=" animate-bounce">
+                        <Dot />
+                      </span>
+                      <span className=" animate-bounce">
+                        <Dot />
+                      </span>
+                    </span>
+                  )}
                   Create Interview Link
                 </button>
               </div>

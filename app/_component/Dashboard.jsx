@@ -10,7 +10,7 @@ const Dashboard = () => {
   const router = useRouter();
 
   return (
-    <div className="h-100vh bg-gradient-to-br from-indigo-100 via-purple-100 to-pink-100 p-4 sm:p-6 mt-52 md:mt-[-100px]">
+    <div className="h-100vh w-full bg-gradient-to-br from-indigo-100 via-purple-100 to-pink-100 p-4 sm:p-4 mt-52 md:mt-[-100px]">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center bg-white rounded-xl shadow-md p-4 sm:p-6 mb-8">
         <div className="mb-4 sm:mb-0">
           <h2 className="text-xl sm:text-2xl font-bold text-indigo-700">

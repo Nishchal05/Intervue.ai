@@ -22,7 +22,7 @@ const Navbar = () => {
       {/* Logo and Title */}
       <div className="flex items-center gap-3">
         <img src="/IntervueLogo.png" alt="Intervue Logo" className="h-15 w-auto animate-pulse" />
-        <h1 className="text-2xl font-extrabold text-indigo-600 tracking-tight font-mono">Intervue.ai</h1>
+        <h1 className="text-2xl font-extrabold text-indigo-600 tracking-tight font-mono">Synvue.ai</h1>
       </div>
 
       {/* Desktop Navigation */}
