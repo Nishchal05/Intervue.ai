@@ -3,10 +3,10 @@
 import React, { useState } from 'react';
 import { FaCheckCircle, FaCopy } from 'react-icons/fa';
 
-const InterviewSuccessClient = ({interviewId,useremail}) => {
+const InterviewSuccessClient = ({interviewId,email}) => {
   const [copied, setCopied] = useState(false);
 
-  const link = `${process.env.NEXT_PUBLIC_BASE_URL}/interview?mail=${useremail}&id=${interviewId}`;
+  const link = `${process.env.NEXT_PUBLIC_BASE_URL}/interview?mail=${email}&id=${interviewId}`;
 
   const handleCopy = () => {
     navigator.clipboard.writeText(link);

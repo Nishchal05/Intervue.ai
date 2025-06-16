@@ -48,7 +48,6 @@ export async function POST(req) {
     try {
       const parsed = JSON.parse(content);
       parsedQuestions = parsed.interviewQuestions || [];
-      console.log(parsedQuestions)
     } catch (err) {
       console.error("Failed to parse model response JSON:", err);
       return NextResponse.json({ error: "Invalid AI response format" }, { status: 500 });
@@ -87,7 +86,6 @@ export async function POST(req) {
       user.interviews.interviewData[interviewId] = interviewData;
 user.interviews.totalCreated = total + 1;
 
-// Explicitly tell Mongoose the nested field was modified
 user.markModified("interviews.interviewData");
 
 await user.save();

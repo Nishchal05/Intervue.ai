@@ -18,7 +18,6 @@ const Page = () => {
   const router = useRouter();
   const { user } = useUser();
   const [copied, setCopied] = useState(false);
-  const [interviewLink, setInterviewLink] = useState("");
 
   const [formData, setFormData] = useState({
     jobPosition: "",
@@ -56,8 +55,7 @@ const Page = () => {
 
       const result = await response.json();
       if (result) {
-        const link = `${process.env.NEXT_PUBLIC_BASE_URL}/mockinterview/${result.interviewId}`;
-        setInterviewLink(link);
+        console.log(result);
         setinterviewid(result.interviewId);
         setuseremail(result.useremail)
         setloading(false);
@@ -67,13 +65,6 @@ const Page = () => {
       console.error(error);
     }
   };
-
-  const handleCopy = () => {
-    navigator.clipboard.writeText(interviewLink);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
-  };
-
   return (
     <div className="flex min-h-screen bg-gray-50">
       <Sidebar />
