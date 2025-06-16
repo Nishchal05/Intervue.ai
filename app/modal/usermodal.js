@@ -17,10 +17,10 @@ const UserSchema = new mongoose.Schema({
   interviews: {
     totalCreated: { type: Number, default: 0 },
     interviewData: {
-      type: Map,
-      of: SingleInterviewSchema,
-      default: {},
-    },
+  type: Object,
+  default: {},
+}
+,
   },
 });
 

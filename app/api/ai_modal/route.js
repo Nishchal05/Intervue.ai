@@ -41,20 +41,18 @@ export async function POST(req) {
 
     let content = message.content.trim();
 
-    // Remove markdown code fences if present
     if (content.startsWith("```json") || content.startsWith("```")) {
       content = content.replace(/```json|```/g, "").trim();
     }
-
     let parsedQuestions = [];
     try {
       const parsed = JSON.parse(content);
       parsedQuestions = parsed.interviewQuestions || [];
+      console.log(parsedQuestions)
     } catch (err) {
       console.error("Failed to parse model response JSON:", err);
       return NextResponse.json({ error: "Invalid AI response format" }, { status: 500 });
     }
-
     const interviewDurationMinutes = parseInt(duration);
     const expiryDate = new Date(Date.now() + (interviewDurationMinutes + 10) * 60 * 1000);
 
@@ -83,14 +81,18 @@ export async function POST(req) {
     } else {
       const total = user.interviews?.totalCreated || 0;
       interviewId = `interview${total + 1}`;
-      if (!user.interviews.interviewData) {
+      if (!user.interviews.interviewData || typeof user.interviews.interviewData !== 'object') {
         user.interviews.interviewData = {};
       }
       user.interviews.interviewData[interviewId] = interviewData;
-      user.interviews.totalCreated = total + 1;
-      await user.save();
-    }
+user.interviews.totalCreated = total + 1;
 
+// Explicitly tell Mongoose the nested field was modified
+user.markModified("interviews.interviewData");
+
+await user.save();
+   
+    }
     return NextResponse.json({
       success: true,
       interview: parsedQuestions,

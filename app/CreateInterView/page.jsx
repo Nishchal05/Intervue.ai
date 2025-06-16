@@ -3,50 +3,77 @@
 import React, { useState } from "react";
 import Sidebar from "../_component/Sidebar";
 import { Progress } from "@/components/ui/progress";
-import { Methods } from "openai/resources/fine-tuning/methods";
-import { Content } from "next/font/google";
 import { useUser } from "@clerk/nextjs";
 import { Dot } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { FaCopy, FaCheckCircle } from "react-icons/fa";
+import InterviewSuccessClient from "../_component/InterviewSuccessClient";
+import { Suspense } from "react";
 const Page = () => {
   const [loading, setloading] = useState(false);
   const [step, setStep] = useState(1);
-  const router=useRouter();
-  const {user}=useUser();
+  const [progress, setProgress] = useState(33.33);
+  const [interviewid,setinterviewid]=useState();
+  const [useremail,setuseremail]=useState();
+  const router = useRouter();
+  const { user } = useUser();
+  const [copied, setCopied] = useState(false);
+  const [interviewLink, setInterviewLink] = useState("");
+
   const [formData, setFormData] = useState({
     jobPosition: "",
     description: "",
     duration: "",
     interviewType: "",
     useremail: user?.primaryEmailAddress?.emailAddress,
-    username: user?.fullName
+    username: user?.fullName,
   });
 
-  const nextStep = () => setStep((prev) => Math.min(prev + 1, 2));
-  const prevStep = () => setStep((prev) => Math.max(prev - 1, 1));
+  const nextStep = () => {
+    setStep((prev) => Math.min(prev + 1, 3));
+    setProgress((prev) => Math.min(prev + 33.33, 100));
+  };
+
+  const prevStep = () => {
+    setStep((prev) => Math.max(prev - 1, 1));
+    setProgress((prev) => Math.max(prev - 33.33, 33.33));
+  };
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
-  const HandleInterviewLink = async () => {
+
+  const handleInterviewLink = async () => {
     setloading(true);
     try {
       const response = await fetch("/api/ai_modal", {
-        method: 'POST',
+        method: "POST",
         body: JSON.stringify(formData),
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
       });
+
       const result = await response.json();
-      if(result){
+      if (result) {
+        const link = `${process.env.NEXT_PUBLIC_BASE_URL}/mockinterview/${result.interviewId}`;
+        setInterviewLink(link);
+        setinterviewid(result.interviewId);
+        setuseremail(result.useremail)
         setloading(false);
-        router.push(`/interview?useremail=${result.useremail}&id=${result.interviewId}`)
+        nextStep();
       }
     } catch (error) {
       console.error(error);
     }
   };
+
+  const handleCopy = () => {
+    navigator.clipboard.writeText(interviewLink);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
+
   return (
     <div className="flex min-h-screen bg-gray-50">
       <Sidebar />
@@ -56,7 +83,9 @@ const Page = () => {
             Create New Interview
           </h2>
 
-          <Progress value={step === 1 ? 50 : 100} className="mb-6" />
+          <Progress value={progress} className="mb-6" />
+
+          {/* Step 1 */}
           {step === 1 && (
             <div className="space-y-5">
               <div>
@@ -121,8 +150,6 @@ const Page = () => {
               </div>
             </div>
           )}
-
-          {/* Step 2 */}
           {step === 2 && (
             <div className="space-y-5">
               <div>
@@ -154,29 +181,37 @@ const Page = () => {
                   ← Back
                 </button>
                 <button
-                  onClick={() => HandleInterviewLink()}
+                  onClick={handleInterviewLink}
                   disabled={loading || !formData.interviewType}
                   className={` text-white px-6 py-2 rounded-md transition ${
-                    !formData.interviewType || loading ? "bg-blue-100" : "bg-indigo-600"
+                    !formData.interviewType || loading
+                      ? "bg-blue-100"
+                      : "bg-indigo-600 hover:bg-indigo-700"
                   }`}
                 >
-                  {loading && (
-                    <span className=" flex">
-                      <span className=" animate-bounce">
+                  {loading ? (
+                    <span className="flex">
+                      <span className="animate-bounce">
                         <Dot />
                       </span>
-                      <span className=" animate-bounce">
+                      <span className="animate-bounce">
                         <Dot />
                       </span>
-                      <span className=" animate-bounce">
+                      <span className="animate-bounce">
                         <Dot />
                       </span>
                     </span>
+                  ) : (
+                    "Create Interview Link"
                   )}
-                  Create Interview Link
                 </button>
               </div>
             </div>
+          )}
+          {step === 3 && (
+            <Suspense>
+              <InterviewSuccessClient interviewId={interviewid} email={useremail}/>
+            </Suspense>
           )}
         </div>
       </main>
