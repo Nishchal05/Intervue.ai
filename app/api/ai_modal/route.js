@@ -84,10 +84,8 @@ export async function POST(req) {
         user.interviews.interviewData = {};
       }
       user.interviews.interviewData[interviewId] = interviewData;
-user.interviews.totalCreated = total + 1;
-
-user.markModified("interviews.interviewData");
-
+      user.interviews.totalCreated = total + 1;
+      user.markModified("interviews");
 await user.save();
    
     }

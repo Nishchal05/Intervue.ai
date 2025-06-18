@@ -15,9 +15,7 @@ const Page = () => {
   const [progress, setProgress] = useState(33.33);
   const [interviewid,setinterviewid]=useState();
   const [useremail,setuseremail]=useState();
-  const router = useRouter();
   const { user } = useUser();
-  const [copied, setCopied] = useState(false);
 
   const [formData, setFormData] = useState({
     jobPosition: "",
@@ -66,10 +64,10 @@ const Page = () => {
     }
   };
   return (
-    <div className="flex min-h-screen bg-gray-50">
+    <div className="flex min-h-screen bg-gray-100">
       <Sidebar />
-      <main className="md:ml-64 mt-15 w-full p-6 flex justify-center items-start">
-        <div className="w-full max-w-2xl mt-10 bg-white p-8 rounded-xl shadow-md">
+      <main className="md:ml-64 mt-4 w-full p-6 flex justify-center items-start">
+        <div className="w-full max-w-3xl mt-10 bg-white p-8 rounded-xl shadow-md">
           <h2 className="text-3xl font-bold text-indigo-700 mb-6">
             Create New Interview
           </h2>
@@ -201,7 +199,7 @@ const Page = () => {
           )}
           {step === 3 && (
             <Suspense>
-              <InterviewSuccessClient interviewId={interviewid} email={useremail}/>
+              <InterviewSuccessClient interviewId={interviewid} email={useremail} jobPosition={formData.jobPosition} duration={formData.duration}/>
             </Suspense>
           )}
         </div>
