@@ -63,10 +63,8 @@ export async function POST(req) {
     };
 
     let user = await User.findOne({ email: useremail });
-    let interviewId = "";
-
+    let interviewId = uuidv4();
     if (!user) {
-      interviewId = uuidv4();
       user = await User.create({
         name: username,
         email: useremail,
@@ -78,16 +76,17 @@ export async function POST(req) {
         }
       });
     } else {
-      const total = user.interviews?.totalCreated || 0;
-      interviewId = uuidv4();
-      if (!user.interviews.interviewData || typeof user.interviews.interviewData !== 'object') {
-        user.interviews.interviewData = {};
-      }
-      user.interviews.interviewData[interviewId] = interviewData;
+      const total = user?.interviews?.totalCreated || 0;
+      const currentData = user.interviews.interviewData || {};
+      const updatedData = {
+        ...Object.fromEntries(currentData instanceof Map ? currentData : Object.entries(currentData)),
+        [interviewId]: interviewData
+      };
+      user.interviews.interviewData = new Map(Object.entries(updatedData));
       user.interviews.totalCreated = total + 1;
       user.markModified("interviews");
-await user.save();
-   
+      
+      await user.save();      
     }
     return NextResponse.json({
       success: true,
