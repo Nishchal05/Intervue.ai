@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import OpenAI from "openai";
 import User from "@/app/modal/usermodal";
 import dbconnect from "@/app/DBConnection";
-
+import { v4 as uuidv4 } from 'uuid';
 export async function POST(req) {
   try {
     await dbconnect();
@@ -66,7 +66,7 @@ export async function POST(req) {
     let interviewId = "";
 
     if (!user) {
-      interviewId = "interview1";
+      interviewId = uuidv4();
       user = await User.create({
         name: username,
         email: useremail,
@@ -79,7 +79,7 @@ export async function POST(req) {
       });
     } else {
       const total = user.interviews?.totalCreated || 0;
-      interviewId = `interview${total + 1}`;
+      interviewId = uuidv4();
       if (!user.interviews.interviewData || typeof user.interviews.interviewData !== 'object') {
         user.interviews.interviewData = {};
       }

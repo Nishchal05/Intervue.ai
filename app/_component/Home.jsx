@@ -10,9 +10,9 @@ const Home = () => {
 
       {/* Background Animated Star */}
       <img
-        src="/star-removebg-preview.png"
+        src="/Starimg.png"
         alt="Decorative Star"
-        className="absolute top-0 left-0 w-full h-full object-contain opacity-10 animate-spin text-blue-700 pointer-events-none z-0"
+        className="absolute top-0 left-0 w-full h-full object-contain opacity-10 animate-ping text-blue-700 pointer-events-none z-0"
       />
 
       {/* Main Content */}

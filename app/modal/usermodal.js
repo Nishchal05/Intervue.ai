@@ -17,11 +17,12 @@ const UserSchema = new mongoose.Schema({
   interviews: {
     totalCreated: { type: Number, default: 0 },
     interviewData: {
-  type: Object,
-  default: {},
-}
-,
+      type: Map,
+      of: SingleInterviewSchema,
+      default: {},
+    },
   },
 });
+
 
 module.exports = mongoose.models.User || mongoose.model("User", UserSchema);

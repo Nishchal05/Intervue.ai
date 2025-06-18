@@ -15,7 +15,7 @@ const InterviewSuccessClient = ({interviewId,email}) => {
   };
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-blue-100 to-blue-200 px-6 py-12">
+    <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-blue-100 to-blue-200 px-6 py-6">
       <div className="bg-white shadow-2xl rounded-2xl p-8 max-w-md w-full text-center space-y-6">
         <FaCheckCircle className="text-green-500 text-5xl mx-auto animate-pulse" />
         <h1 className="text-2xl font-semibold text-gray-800">
