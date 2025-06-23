@@ -7,6 +7,7 @@ const QuestionSchema = new mongoose.Schema({
 const SingleInterviewSchema = new mongoose.Schema({
   domain: String,
   questions: [QuestionSchema],
+  duration: Number,
   createdAt: Date,
   linkExpiry: Date,
 });

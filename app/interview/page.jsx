@@ -1,8 +1,11 @@
 import React from 'react'
-
+import { Suspense } from 'react'
+import InterviewRoom from '../_component/interviewpage'
 const page = () => {
   return (
-    <div>page</div>
+    <Suspense>
+      <InterviewRoom/>
+    </Suspense>
   )
 }
 

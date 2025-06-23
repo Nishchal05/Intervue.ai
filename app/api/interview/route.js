@@ -8,7 +8,6 @@ export async function GET(req) {
     const { searchParams } = new URL(req.url);
     const email = searchParams.get("useremail");
     const interviewId = searchParams.get("interviewId");
-
     if (!email || !interviewId) {
       return NextResponse.json(
         { error: "Missing query parameters" },

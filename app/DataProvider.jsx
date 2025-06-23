@@ -5,7 +5,7 @@ import React, { createContext, useState } from 'react';
 export const DataContext = createContext();
 
 const DataProvider = ({ children }) => {
-  const [view, setView] = useState(false);
+  const [view, setView,id,setid,email,setemail] = useState(false);
 
   return (
     <DataContext.Provider value={{ view, setView }}>

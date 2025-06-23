@@ -9,6 +9,7 @@ export async function POST(req) {
     const { jobPosition, description, duration, interviewType, useremail, username } = await req.json();
 
     if (!jobPosition || !description || !duration || !interviewType || !useremail || !username) {
+      console.log( jobPosition, description, duration, interviewType, useremail, username)
       return NextResponse.json({ error: "Missing input fields" }, { status: 400 });
     }
 
@@ -58,6 +59,7 @@ export async function POST(req) {
     const interviewData = {
       domain: jobPosition,
       questions: parsedQuestions,
+      duration: parseInt(duration),
       createdAt: new Date(),
       linkExpiry: expiryDate
     };

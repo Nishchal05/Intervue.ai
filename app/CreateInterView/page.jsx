@@ -5,8 +5,6 @@ import Sidebar from "../_component/Sidebar";
 import { Progress } from "@/components/ui/progress";
 import { useUser } from "@clerk/nextjs";
 import { Dot } from "lucide-react";
-import { useRouter } from "next/navigation";
-import { FaCopy, FaCheckCircle } from "react-icons/fa";
 import InterviewSuccessClient from "../_component/InterviewSuccessClient";
 import { Suspense } from "react";
 const Page = () => {
@@ -16,7 +14,6 @@ const Page = () => {
   const [interviewid,setinterviewid]=useState();
   const [useremail,setuseremail]=useState();
   const { user } = useUser();
-
   const [formData, setFormData] = useState({
     jobPosition: "",
     description: "",
@@ -25,7 +22,6 @@ const Page = () => {
     useremail: user?.primaryEmailAddress?.emailAddress,
     username: user?.fullName,
   });
-
   const nextStep = () => {
     setStep((prev) => Math.min(prev + 1, 3));
     setProgress((prev) => Math.min(prev + 33.33, 100));

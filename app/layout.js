@@ -28,7 +28,9 @@ export default function RootLayout({ children }) {
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-      <DataProvider><Navbar/>
+      <DataProvider>
+        
+      <Navbar/>
         {children}</DataProvider>
       
       </body>

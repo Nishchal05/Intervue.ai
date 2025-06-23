@@ -32,7 +32,7 @@ const Dashboard = () => {
             Practice real-time interview questions customized for your role.
           </p>
           <button
-            className="bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700 transition"
+            className="bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700 transition cursor-pointer"
             onClick={() => {
               router.push('/CreateInterView');
             }}
@@ -60,7 +60,7 @@ const Dashboard = () => {
         </h3>
         <div className="text-center text-gray-500 py-8">
           <p className="mb-4">You haven’t taken any interviews yet.</p>
-          <button className="bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700 transition">
+          <button className="bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700 transition cursor-pointer">
             Create First Interview
           </button>
         </div>
