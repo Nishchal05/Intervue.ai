@@ -45,14 +45,6 @@ const Sidebar = () => {
               Home
             </Link>
 
-            <Link
-              href="/profile"
-              className="flex items-center gap-3 hover:text-indigo-600 transition"
-            >
-              <FaUser className="text-xl bg-gradient-to-r text-indigo-700 bg-clip-text" />
-              Profile
-            </Link>
-
             <div
               onClick={()=>{!UserButton ? router.push('/CreateInterView') : router.push('https://harmless-civet-15.accounts.dev/sign-up?redirect_url=http%3A%2F%2Flocalhost%3A3000%2F')}}
               className="flex items-center gap-3 hover:text-indigo-600 transition"
@@ -66,6 +58,20 @@ const Sidebar = () => {
             >
               <FaCreditCard className="text-xl bg-gradient-to-r text-indigo-700 bg-clip-text" />
               Add Credits
+            </Link>
+            <Link
+              href="/profile"
+              className="flex items-center gap-3 hover:text-indigo-600 transition"
+            >
+              <FaUser className="text-xl bg-gradient-to-r text-indigo-700 bg-clip-text" />
+              Contact Us
+            </Link>
+            <Link
+              href="/profile"
+              className="flex items-center gap-3 hover:text-indigo-600 transition"
+            >
+              <FaUser className="text-xl bg-gradient-to-r text-indigo-700 bg-clip-text" />
+              FeedBack
             </Link>
           </nav>
         </div>

@@ -27,40 +27,74 @@ const openai = new OpenAI({
 wss.on("connection", (ws) => {
   console.log("🎧 Client connected");
 
+  // 🔹 Variables per client connection
+  let initialized = false;
+  let questionList = [];
+  let userName = "Candidate";
+  let jobPosition = "Developer";
+  let questionIndex = 0;
+
   ws.on("message", async (data) => {
     try {
       const parsed = JSON.parse(data.toString());
-      if (parsed.type !== "transcript") return;
 
-      const transcript = parsed.message;
-      const interviewDetails = parsed.interviewDetails || {};
+      // 🔸 1. Handle INIT (only once)
+      if (parsed.type === "init") {
+        const details = parsed.interviewDetails || {};
+        userName = details?.name || "Candidate";
+        jobPosition = details?.interviewdetails?.domain || "Developer";
+        questionList = details?.interviewdetails?.questionsa || [];
 
-      const userName = interviewDetails?.name || "Candidate";
-      const questionList = interviewDetails?.interviewdetails?.questionsa || [];
+        initialized = true;
 
-      // Inject dynamic values into system prompt
-      const rawSystemPrompt = assistantOptions.model.messages[0].content;
+        const greeting = `Hi ${userName}, great to have you here! Let's get started.`;
+        const firstQuestion = questionList[0] || "Tell me about yourself.";
+        ws.send("🤖 AI: " + greeting + " " + firstQuestion);
+        return;
+      }
 
-      const customizedSystemPrompt = rawSystemPrompt
-        .replace("{{userName}}", userName)
-        .replace("{{questionList}}", questionList.map((q, i) => `${i + 1}. ${q}`).join('\n'))
-        .replace("{{jobPosition}}", interviewDetails?.interviewdetails?.domain || "Developer");
+      // 🔸 2. Handle Transcript Messages
+      if (parsed.type === "transcript" && initialized) {
+        const transcript = parsed.message.trim();
+        if (!transcript) return;
 
-      const messages = [
-        { role: "system", content: customizedSystemPrompt },
-        { role: "user", content: transcript }
-      ];
+        // Build system prompt
+        const systemPrompt = assistantOptions.model.messages[0].content
+          .replace("{{userName}}", userName)
+          .replace(
+            "{{questionList}}",
+            questionList.map((q, i) => `${i + 1}. ${q}`).join("\n")
+          )
+          .replace("{{jobPosition}}", jobPosition);
 
-      const completion = await openai.chat.completions.create({
-        model: assistantOptions.model.model,
-        messages
-      });
+        const messages = [
+          { role: "system", content: systemPrompt },
+          { role: "user", content: transcript },
+        ];
 
-      const reply = completion.choices[0].message.content;
-      console.log("🤖 AI:", reply);
-      ws.send("🤖 AI: " + reply);
+        // Get AI reply for current transcript
+        const completion = await openai.chat.completions.create({
+          model: assistantOptions.model.model,
+          messages,
+        });
+
+        const reply = completion.choices[0].message.content;
+
+        // 🔹 Combine AI feedback + next question (if available)
+        let fullReply = `💬 ${reply.trim()}\n\n`;
+
+        questionIndex++; // move to next question
+
+        if (questionIndex < questionList.length) {
+          fullReply += `👉 Next question: ${questionList[questionIndex]}`;
+        } else {
+          fullReply += `✅ That concludes the interview. Thank you, ${userName}!`;
+        }
+
+        ws.send("🤖 AI: " + fullReply);
+      }
     } catch (error) {
-      console.error("❌ OpenRouter API error:", error.message);
+      console.error("❌ AI Error:", error.message);
       ws.send("❌ AI Error: " + error.message);
     }
   });

@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import CallOutlinedIcon from "@mui/icons-material/CallOutlined";
+
 export default function InterviewRoom() {
   const [started, setStarted] = useState(false);
   const [seconds, setSeconds] = useState(0);
@@ -15,43 +16,88 @@ export default function InterviewRoom() {
   const params = useSearchParams();
   const interviewId = params.get("id");
   const email = params.get("mail");
-  const [interviewdel,setinterviewdel]=useState(null);
+  const [interviewdel, setInterviewdel] = useState(null);
+
+  // ✅ Text-to-Speech function with callback
+  const speakText = (text, onEndCallback) => {
+    const synth = window.speechSynthesis;
+    if (!synth) return;
+
+    const utter = new SpeechSynthesisUtterance(text);
+    utter.lang = "en-US";
+    utter.rate = 1;
+    utter.pitch = 1;
+
+    utter.onend = () => {
+      if (onEndCallback) onEndCallback();
+    };
+
+    synth.cancel(); // stop any speaking before starting new one
+    synth.speak(utter);
+  };
+
   const startInterview = async () => {
     try {
-      // Connect WebSocket
       socketRef.current = new WebSocket("ws://localhost:8080");
-      // Optional: Listen for response
-      socketRef.current.onmessage = (event) => {
-        console.log("📩 Message from server:", event.data);
+
+      socketRef.current.onopen = () => {
+        if (socketRef.current.readyState === WebSocket.OPEN && interviewdel) {
+          socketRef.current.send(
+            JSON.stringify({
+              type: "init",
+              interviewDetails: interviewdel,
+            })
+          );
+        }
       };
 
-      window.SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+      socketRef.current.onmessage = (event) => {
+        const message = event.data;
+
+        if (message.startsWith("🤖 AI: ")) {
+          const aiMessage = message.replace("🤖 AI: ", "").trim();
+
+          // 🛑 Stop mic during TTS
+          if (recognitionRef.current) {
+            recognitionRef.current.abort(); // Immediately stop recognition
+          }
+
+          // 🔊 Speak AI reply and restart mic after it's done
+          speakText(aiMessage, () => {
+            if (started && recognitionRef.current) {
+              recognitionRef.current.start();
+            }
+          });
+        }
+      };
+
+      window.SpeechRecognition =
+        window.SpeechRecognition || window.webkitSpeechRecognition;
       const recognition = new window.SpeechRecognition();
 
       recognitionRef.current = recognition;
-
-      recognition.continuous = true;
-      recognition.interimResults = true;
+      recognition.continuous = false;
+      recognition.interimResults = false;
       recognition.lang = "en-US";
 
       recognition.onresult = (e) => {
-        const interimTranscript = Array.from(e.results)
-          .map((result) => result[0])
-          .map((result) => result.transcript)
-          .join(" ");
+        const transcript = Array.from(e.results)
+          .map((result) => result[0].transcript)
+          .join(" ")
+          .trim();
 
-        setTranscript(interimTranscript);
+        setTranscript(transcript);
         if (convertTextRef.current) {
-          convertTextRef.current.innerText = interimTranscript;
+          convertTextRef.current.innerText = transcript;
         }
 
-        // ✅ Send every update to backend
         if (socketRef.current?.readyState === WebSocket.OPEN) {
-          socketRef.current.send(JSON.stringify({
-            type: "transcript",
-            message: interimTranscript,
-            interviewDetails: interviewdel 
-          }));
+          socketRef.current.send(
+            JSON.stringify({
+              type: "transcript",
+              message: transcript,
+            })
+          );
         }
       };
 
@@ -59,11 +105,9 @@ export default function InterviewRoom() {
         console.error("Recognition error:", e.error);
       };
 
+      // ✅ DO NOT restart here, we handle it after TTS
       recognition.onend = () => {
-        if (started) {
-          console.log("🎤 Restarting speech recognition...");
-          recognition.start();
-        }
+        console.log("🛑 Mic ended. Will restart after TTS.");
       };
 
       recognition.start();
@@ -97,7 +141,7 @@ export default function InterviewRoom() {
       const result = await response.json();
       if (result?.interviewdetails) {
         setInterviewDetails(result.interviewdetails);
-        setinterviewdel(result)
+        setInterviewdel(result);
       } else {
         console.warn("No interview data found");
       }
